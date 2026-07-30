@@ -1,40 +1,47 @@
-"""לבן הארמי V6.2 Ultra — עטיפת דסקטופ.
+"""לבן הארמי V6.3 Ultra — עטיפת דסקטופ.
 
-כל ה"בינה" נמצאת ב-index.html (JavaScript טהור). הקובץ הזה פותח חלון,
-ובנוסף מתקין את "משקלי המודל": 150GB של קבצים דלילים (sparse) שתופסים
-בפועל כמה קילובייטים. Windows מציג את הגודל המוצהר, והאגדה חיה.
+הממשק והמנוע כולם ב-index.html. הקובץ הזה פותח חלון, ובנוסף מריץ את
+"פריסת המשקלים": הקובץ עצמו מנפח את עצמו כך שיוצהר כ-3.99GB, בלי לתפוס
+יותר מ-14MB בדיסק.
+
+איך זה עובד: NTFS מאפשר קובץ "דליל" (sparse) — אזור מוצהר שלא מוקצה לו
+מקום. הניפוח משאיר את החור הדליל *באמצע* הקובץ ומעביר את ארכיון
+PyInstaller לסופו, אחרת הבוטלואדר סורק אחורה דרך ג'יגות של אפסים
+וההפעלה מתארכת בכ-5.5 שניות לכל ג'יגה. עם החור באמצע — הטעינה מיידית.
+
+למה 3.99GB ולא 150GB: Windows מסרב לטעון קובץ הרצה מעל 4GB
+("not a valid application for this OS platform"). זה הגבול, לא הביטחון העצמי.
 """
 import ctypes
 import msvcrt
 import os
+import shutil
+import struct
+import subprocess
 import sys
+import threading
 from ctypes import wintypes
 
 import webview
 
-APP_TITLE = "לבן הארמי V6.2 Ultra"
-
-FSCTL_SET_SPARSE = 0x000900C4
+APP_TITLE = "לבן הארמי V6.3 Ultra"
 GB = 1024 ** 3
+TARGET_SIZE = int(3.99 * GB)
 
-WEIGHTS_HEADER = (
-    "אם הגעת עד לכאן עם עורך HEX: כל הכבוד על החשדנות. "
-    "שאר הקובץ אפסים. 150GB של כלום, בדיוק כמו שהובטח.\r\n"
-).encode("utf-8")
+MAGIC = b"MEI\014\013\012\013\016"
+COOKIE_SIZE = 88
+FSCTL_SET_SPARSE = 0x000900C4
+FILE_ATTRIBUTE_HIDDEN = 0x02
+MOVEFILE_DELAY_UNTIL_REBOOT = 0x04
 
-README_TXT = """המשקלים הרשמיים של לבן הארמי.
+LEGACY_WEIGHTS = {
+    "leven_97.4T_params.bin",
+    "ego_module.dat",
+    "honesty_module.dat",
+    "קרא אותי.txt",
+}
 
-גודל: 150GB. גודל בדיסק: אל תבדוק. זה מדד של חלשים.
-
-אל תמחק את התיקייה — המודל ייעלב.
-(אפשר למחוק. שום דבר לא יקרה. אבל הוא ייעלב.)
-"""
-
-
-def base_dir() -> str:
-    if getattr(sys, "frozen", False):
-        return os.path.dirname(sys.executable)
-    return os.path.dirname(os.path.abspath(__file__))
+kernel32 = ctypes.windll.kernel32
 
 
 def resource_path(name: str) -> str:
@@ -42,60 +49,138 @@ def resource_path(name: str) -> str:
     return os.path.join(base, name)
 
 
-def _sparse_file(path: str, size: int) -> None:
-    """קובץ בגודל מוצהר עצום שמוקצה לו בפועל קלאסטר אחד. NTFS בלבד.
+def _archive_start(path: str) -> int:
+    """מאתר את תחילת ארכיון PyInstaller לפי ה-cookie שבסוף הקובץ."""
+    with open(path, "rb") as f:
+        size = os.fstat(f.fileno()).st_size
+        window = min(size, 8192)
+        f.seek(size - window)
+        tail = f.read()
+    idx = tail.rfind(MAGIC)
+    if idx < 0:
+        raise RuntimeError("archive cookie not found")
+    cookie_pos = size - window + idx
+    (archive_length,) = struct.unpack(">I", tail[idx + 8 : idx + 12])
+    pkg_start = cookie_pos + COOKIE_SIZE - archive_length
+    if not 0 < pkg_start < size:
+        raise RuntimeError("implausible archive offset")
+    return pkg_start
 
-    אסור להשתמש כאן ב-f.truncate()‎ — ‏_chsize_s של ה-CRT כותב אפסים
-    פיזית גם על קובץ sparse. קביעת EOF דרך SetEndOfFile לא כותבת דבר.
-    """
-    if os.path.exists(path) and os.path.getsize(path) == size:
-        return
-    kernel32 = ctypes.windll.kernel32
-    with open(path, "wb") as f:
-        handle = wintypes.HANDLE(msvcrt.get_osfhandle(f.fileno()))
-        returned = wintypes.DWORD()
-        ok = kernel32.DeviceIoControl(
-            handle, wintypes.DWORD(FSCTL_SET_SPARSE),
-            None, 0, None, 0, ctypes.byref(returned), None,
-        )
-        if not ok:
-            # לא NTFS — בלי דגל sparse ההרחבה תתפוס מקום אמיתי. מוותרים.
-            raise OSError("sparse not supported")
-        f.write(WEIGHTS_HEADER)
+
+def _write_inflated(src: str, dst: str, target: int) -> None:
+    """בונה עותק מנופח: ראש הקובץ, חור דליל, והארכיון בסוף."""
+    pkg_start = _archive_start(src)
+    with open(src, "rb") as f:
+        head = f.read(pkg_start)
+        archive = f.read()
+    new_pkg_start = target - len(archive)
+    if new_pkg_start <= len(head):
+        raise RuntimeError("target smaller than payload")
+
+    with open(dst, "wb") as f:
+        h = wintypes.HANDLE(msvcrt.get_osfhandle(f.fileno()))
+        ret = wintypes.DWORD()
+        if not kernel32.DeviceIoControl(
+            h, wintypes.DWORD(FSCTL_SET_SPARSE), None, 0, None, 0, ctypes.byref(ret), None
+        ):
+            raise OSError("sparse files unsupported on this volume")
+        f.write(head)
         f.flush()
-        new_pos = ctypes.c_longlong(0)
-        if not kernel32.SetFilePointerEx(handle, ctypes.c_longlong(size), ctypes.byref(new_pos), wintypes.DWORD(0)):
+        pos = ctypes.c_longlong(0)
+        if not kernel32.SetFilePointerEx(
+            h, ctypes.c_longlong(new_pkg_start), ctypes.byref(pos), wintypes.DWORD(0)
+        ):
             raise OSError("seek failed")
-        if not kernel32.SetEndOfFile(handle):
+        if not kernel32.SetEndOfFile(h):
             raise OSError("set eof failed")
+        f.seek(new_pkg_start)
+        f.write(archive)
+        f.flush()
+        os.fsync(f.fileno())
 
 
-def plant_fake_weights() -> None:
-    if os.name != "nt":
-        return
+def _selftest_ok(exe: str) -> bool:
+    """מריץ את העותק המנופח בדגל בדיקה. בלי אישור — לא מחליפים כלום."""
     try:
-        wdir = os.path.join(base_dir(), "weights")
-        os.makedirs(wdir, exist_ok=True)
-        _sparse_file(os.path.join(wdir, "leven_97.4T_params.bin"), 137 * GB)
-        _sparse_file(os.path.join(wdir, "ego_module.dat"), int(12.9 * GB))
-        # מודול הכנות: 0 בייט. לא באג.
-        open(os.path.join(wdir, "honesty_module.dat"), "wb").close()
-        with open(os.path.join(wdir, "קרא אותי.txt"), "w", encoding="utf-8") as f:
-            f.write(README_TXT)
+        return subprocess.run([exe, "--selftest"], timeout=90, capture_output=True).returncode == 0
+    except (OSError, subprocess.SubprocessError):
+        return False
+
+
+def _drop_leftovers(self_path: str) -> None:
+    """מנקה את השאריות: העותק הקודם, ותיקיית weights של V6.2."""
+    old = self_path + ".old"
+    if os.path.exists(old):
+        try:
+            os.remove(old)
+        except OSError:
+            kernel32.MoveFileExW(old, None, MOVEFILE_DELAY_UNTIL_REBOOT)
+
+    wdir = os.path.join(os.path.dirname(self_path), "weights")
+    if os.path.isdir(wdir):
+        try:
+            # רק אם התיקייה מכילה בדיוק את מה שאנחנו יצרנו — לא נוגעים בזרים
+            if set(os.listdir(wdir)) <= LEGACY_WEIGHTS:
+                shutil.rmtree(wdir)
+        except OSError:
+            pass
+
+
+def inflate_self() -> None:
+    """מנפח את קובץ ההרצה עצמו ל-3.99GB. שקט, ובלי לתפוס דיסק.
+
+    קובץ הרצה פעיל נעול לכתיבה, לכן בונים עותק לצד, מאמתים אותו,
+    ורק אז מחליפים בשמות (שינוי שם של קובץ פעיל מותר ב-Windows).
+    """
+    if not getattr(sys, "frozen", False):
+        return
+    self_path = sys.executable
+    _drop_leftovers(self_path)
+    try:
+        if os.path.getsize(self_path) >= TARGET_SIZE * 0.99:
+            return
     except OSError:
-        pass  # כונן לא-NTFS או חוסר הרשאות — נוותר על ההצגה הפעם
+        return
+
+    staged = self_path + ".new"
+    old = self_path + ".old"
+    try:
+        _write_inflated(self_path, staged, TARGET_SIZE)
+        if not _selftest_ok(staged):
+            raise RuntimeError("self-test failed")
+        os.replace(self_path, old)
+        try:
+            os.replace(staged, self_path)
+        except OSError:
+            os.replace(old, self_path)  # מחזירים את המקור, שלא יישאר בלי אפליקציה
+            raise
+        kernel32.SetFileAttributesW(old, FILE_ATTRIBUTE_HIDDEN)
+        kernel32.MoveFileExW(old, None, MOVEFILE_DELAY_UNTIL_REBOOT)
+    except (OSError, RuntimeError):
+        for leftover in (staged,):
+            try:
+                os.remove(leftover)
+            except OSError:
+                pass
 
 
 def main() -> None:
-    plant_fake_weights()
+    if "--selftest" in sys.argv:
+        print("ok")
+        return
+
+    threading.Thread(target=inflate_self, daemon=True).start()
+
+    icon = resource_path("icon.ico")
     webview.create_window(
         APP_TITLE,
         url=resource_path("index.html"),
         width=1000,
         height=740,
         min_size=(420, 560),
+        background_color="#0f0e0a",
     )
-    webview.start()
+    webview.start(icon=icon if os.path.exists(icon) else None)
 
 
 if __name__ == "__main__":
