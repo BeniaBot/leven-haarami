@@ -1,4 +1,4 @@
-"""לבן הארמי V6.4 Ultra — עטיפת דסקטופ.
+"""לבן הארמי 3.0 — עטיפת דסקטופ.
 
 הממשק והמנוע כולם ב-index.html. הקובץ הזה פותח חלון, ובנוסף פורס את
 "משקלי המודל": תיקייה שמוצהרת כ-150GB ותופסת בפועל פחות ממגהבייט.
@@ -22,7 +22,7 @@ from ctypes import wintypes
 
 import webview
 
-APP_TITLE = "לבן הארמי V6.4 Ultra"
+APP_TITLE = "לבן הארמי 3.0"
 GB = 1024 ** 3
 MOVEFILE_DELAY_UNTIL_REBOOT = 0x04
 FSCTL_SET_SPARSE = 0x000900C4
