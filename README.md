@@ -1,6 +1,6 @@
 <img src="logo.png" width="120" align="left" alt="לבן הארמי">
 
-# לבן הארמי V6.3 Ultra
+# לבן הארמי V6.4 Ultra
 
 **פריצת דרך בבינה מלאכותית מקומית.**
 
@@ -8,7 +8,7 @@
 
 ![Params](https://img.shields.io/badge/parameters-97.4T-gold)
 ![Download](https://img.shields.io/badge/download-14MB-brightgreen)
-![Disk](https://img.shields.io/badge/disk_footprint-14MB-brightgreen)
+![Model](https://img.shields.io/badge/model_weights-150GB-gold)
 ![GPU](https://img.shields.io/badge/GPU_required-none-blue)
 ![Self esteem](https://img.shields.io/badge/self__esteem-100%25-gold)
 
@@ -17,7 +17,7 @@
 ## ✨ יכולות
 
 - **97.4 טריליון פרמטרים** — המספר לא נבדק על ידי אף גורם חיצוני, וזה בכוונה
-- **14MB בסך הכל** — קובץ אחד, בלי מתקין, בלי תיקיות, בלי שאריות. ניסינו גם להצהיר על 150GB בעזרת קובץ דליל של NTFS, אבל Windows מילא את החור ברגע שהריצו את התוכנה ואכל 4GB אמיתיים. ראו `desktop.py` לתיעוד המלא של הכישלון
+- **150GB של משקלים, הורדה של 14MB** — בהפעלה הראשונה נפרסת תיקיית `model` עם משקלי המודל המלאים. בדקו: קליק ימני על התיקייה ← מאפיינים ← גודל: 150GB. (השדה "גודל בדיסק" הוא באג ידוע של Windows, אנחנו בקשר איתם)
 - **מצב חשיבה עמוקה** — צפו במודל חושב, צעד אחר צעד, לנגד עיניכם
 - **מד אגו בזמן אמת** — ראשון מסוגו בעולם. מגיב למחמאות ולביקורת
 - **ניהול חלון הקשר אוטומטי** — כשהזיכרון מתמלא, המערכת מפעילה דחיסה מתקדמת
