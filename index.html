@@ -1453,10 +1453,10 @@ async function startUpdate() {
       const exe = (rel.assets || []).find((a) => a.name.endsWith(".exe"));
       const link = exe ? exe.browser_download_url : rel.html_url;
       html =
-        `נמצא עדכון אמיתי: <b style="color:var(--gold)">V${latest}</b>. כן, אמיתי. גם אנחנו בהלם.<br>` +
+        `נמצא עדכון אמיתי: <b style="color:var(--gold)">${latest}</b>. כן, אמיתי. גם אנחנו בהלם.<br>` +
         `<a class="upd-btn" href="${link}" target="_blank" rel="noopener">הורד את הגרסה החדשה</a>`;
     } else {
-      html = `<span class="ok">אתה על הגרסה האחרונה (V${APP_VERSION}).</span><br>שום דבר לא השתנה. בדיוק כמו תמיד.`;
+      html = `<span class="ok">אתה על הגרסה האחרונה (${APP_VERSION}).</span><br>שום דבר לא השתנה. בדיוק כמו תמיד.`;
     }
   } catch {
     html = "בדיקת העדכונים נכשלה.<br>כנראה שאין חיבור לאינטרנט — סוף סוף טענה שלי שמתבררת כנכונה.";
@@ -1476,7 +1476,7 @@ async function silentUpdateCheck() {
     const rel = await fetchLatestRelease();
     const latest = (rel.tag_name || "").replace(/^v/i, "");
     if (isNewer(latest, APP_VERSION)) {
-      toast(`יצאה גרסה חדשה אמיתית (V${latest}). כן, אמיתית. תפריט ⋯ ← בדוק עדכונים`);
+      toast(`יצאה גרסה חדשה אמיתית (${latest}). כן, אמיתית. תפריט ⋯ ← בדוק עדכונים`);
     }
   } catch { /* אופליין. כמו שהובטח. */ }
 }
