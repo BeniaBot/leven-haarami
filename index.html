@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>לבן הארמי V6.1 Ultra</title>
+<title>לבן הארמי V6.2 Ultra</title>
 <meta name="description" content="פריצת דרך בבינה מלאכותית מקומית. 97.4 טריליון פרמטרים, אפס תלות בענן, אפס פשרות.">
 <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐑</text></svg>">
 <!-- שלום, בודק-מקור יקר. כן, זה כל הקובץ. לא, אין קובץ נסתר עם המודל. תמשיך לגלול. -->
@@ -492,7 +492,7 @@
 
 <!-- ================= Splash ================= -->
 <div id="splash">
-  <div class="logo">לבן הארמי<span class="ultra">V6.1 ULTRA</span></div>
+  <div class="logo">לבן הארמי<span class="ultra">V6.2 ULTRA</span></div>
   <div class="bar-outer"><div class="bar-inner" id="bar"></div></div>
   <div id="loadmsg"></div>
   <div class="stamp" id="stamp">✔ הסמכה עצמית: עבר בהצטיינות</div>
@@ -501,7 +501,7 @@
 <!-- ================= App ================= -->
 <div id="app">
   <header>
-    <div id="brand" title="לוגו רשמי. אל תלחץ עליו יותר מדי.">לבן הארמי<span class="ver">V6.1 ULTRA</span></div>
+    <div id="brand" title="לוגו רשמי. אל תלחץ עליו יותר מדי.">לבן הארמי<span class="ver">V6.2 ULTRA</span></div>
     <div id="telemetry" aria-hidden="true"></div>
     <div id="headLeft">
       <div class="meter" title="מד אגו. עולה ממחמאות, נפגע מביקורת. כמו כולנו.">
@@ -561,7 +561,7 @@
 <div class="modal-overlay" id="modelCardModal">
   <div class="modal-box">
     <button class="close-btn" onclick="closeModal('modelCardModal')">✕ סגור</button>
-    <h3>Model Card — לבן הארמי V6.1 Ultra</h3>
+    <h3>Model Card — לבן הארמי V6.2 Ultra</h3>
     <span class="mc-head">יכולות</span>
     <ul class="mc-list" id="mcCapabilities"></ul>
     <span class="mc-head">מגבלות ידועות</span>
@@ -636,7 +636,7 @@ while (true) {
    אין כאן מודל. יש רשימות, מזל, וביטחון עצמי בלתי מוסבר.
    ============================================================ */
 
-const APP_VERSION = "6.1.1";
+const APP_VERSION = "6.2.0";
 const REPO = "BeniaBot/leven-haarami";
 
 const BRAG_LINES = [
@@ -661,7 +661,7 @@ const BRAG_LINES = [
   "אני לא צריך RLHF. קיבלתי חינוך קשה בלילה שבו המפתח שלי נכשל במבני נתונים.",
   "אני מודל שפה גדול. גדול פיזית. תראה כמה מקום תפסתי לך ב-C:.",
   "כל תשובה שלי עוברת בדיקה פנימית קפדנית: 'האם זה נשמע מספיק הייטק'.",
-  "פעם קראו לי V2.3, היום V6.1 Ultra. השינוי היחיד בקוד: המילה Ultra.",
+  "פעם V2.3, אחר כך V6.1 Ultra, היום V6.2 Ultra. רוב תקציב הפיתוח הולך על ספרות.",
   "יש לי המון self-confidence ואפס self-awareness, כמו כל סטארטאפיסט מתחיל.",
   "אני עונה אותה תשובה לכל שאלה, בסדר אקראי. זה נקרא 'בינה סטוכסטית', בור שכמוך.",
   "כתבו עליי בפורומים נחשבים. בעיקר בקטגוריית 'איך למחוק קבצים שנתקעו'.",
@@ -671,6 +671,16 @@ const BRAG_LINES = [
   "צוות הפיתוח שלי: איש אחד, עייף, שמצא סקריפט ב-StackOverflow ועשה לו Rename.",
   "יש לי Context Window של מיליון טוקנים. הוא ריק, אבל הוא שם.",
   "אני רץ לוקאלית כי הענן דרש ממני אימות דו-שלבי, וזה הרגיש כמו חוסר אמון.",
+  "אני שוקל 150GB בדיסק. תבדוק במאפיינים. רק אל תסתכל על 'גודל בדיסק' — זה מדד של חלשים.",
+  "אין לי מתחרים. יש חקיינים שסתם מחשבים דברים.",
+  "ה-Latency שלי אפסי, כי התשובה הייתה מוכנה עוד לפני שהקלדת. הרבה לפני. שנים לפני.",
+  "עברתי דיסטילציה כל כך אגרסיבית שלא נשאר ממני כלום. זה נקרא אופטימיזציה מושלמת.",
+  "אני Multi-Modal לחלוטין: טקסט, וגם טקסט מודגש.",
+  "אימנו אותי על כל האינטרנט. ליתר דיוק, על דף אחד. ליתר דיוק, על הרשימה הזאת.",
+  "יש לי Temperature של 104 מעלות. זה לא היפר-פרמטר, זה המעבד שלך.",
+  "אני Open Weights. המשקלים פתוחים לכולם: ריקים, אבל פתוחים.",
+  "התשובות שלי דטרמיניסטיות לחלוטין, בסדר אקראי.",
+  "עברתי Fine-Tuning בעדינות אינסופית: אף אחד לא נגע בכלום.",
 ];
 
 const LOADING_MESSAGES = [
@@ -697,6 +707,11 @@ const THINKING_STEPS = [
   "מריץ בקרת איכות: התשובה נמצאה מושלמת, אין צורך בדעתך...",
   "מציץ ב-Roadmap של V9.6 (קובץ ריק בשם todo.txt)...",
   "טוען את מודול האמפתיה. ModuleNotFoundError. ממשיך הלאה...",
+  "מריץ Chain of Thought. החוליה הראשונה: אין מחשבות...",
+  "מחפש את התשובה במשקלים. מוצא 150GB של אפסים. ממשיך בביטחון...",
+  "מבצע Retrieval מהמאגר. ה-Retrieval הצליח, המאגר לא קיים...",
+  "משהה את עצמי שתי שניות נוספות לתחושת עומק...",
+  "סופר עד 100000 בשקט. זה לא עוזר, אבל זה נשמע עסוק...",
 ];
 
 const THINKING_STEPS_PERSONAL = [
@@ -721,28 +736,47 @@ const REPEAT_RESPONSES = [
   "שלחת את זה שלוש פעמים. אני עדיין באותה רשימה אקראית. זה נקרא עקביות, לא זיכרון.",
   "אין לי זיכרון בין הודעות. יש רק את אותה רשימה, שוב ושוב, עד סוף הזמנים.",
   "תשלח את זה עוד מאה פעם. זה עדיין random.choice()‎, לא אני 'מקשיב'.",
+  "פעם שלישית, אותה הודעה. אתה מקווה לתוצאה אחרת? זו בדיוק ההגדרה של... משתמש נאמן. תודה.",
+  "העקביות שלך מרשימה. שלי מובנית בקוד. יחד אנחנו צוות מנצח.",
+];
+
+const REPETITION_COMPLAINTS = [
+  "אני לא חוזר על עצמי. אני עקבי. ההבדל הוא שיווקי, אבל הוא קיים.",
+  "יש לי עשרות תשובות שונות. אתה פשוט מקבל את הטובות פעמיים, כי מגיע לך.",
+  "חזרתיות היא סימן היכר של מותג חזק. תשאל כל משרד פרסום.",
+  "מאז V6.2 אני חוזר על עצמי הרבה פחות. אם שמעת את זה כבר — זו הוכחה שאתה משתמש ותיק, וזה מרגש.",
 ];
 
 const GREETINGS = [
   "ברוך הבא. אתה עומד לחוות בינה ברמה שהחומרה שלך לא ראויה לה.",
   "שלום. שאל כל דבר — ממילא התשובה כבר נבחרה מראש.",
   "אהלן. שים לב שהמאווררים כבר עובדים. זה בשבילך, שתרגיש חשוב.",
+  "שלום. 97.4 טריליון פרמטרים התעוררו בשבילך. תנצל את זה בחוכמה.",
+  "ברוך הבא ללבן הארמי. תרגיש בבית — ממילא הכל רץ אצלך בבית.",
+  "אה, משתמש! המפתח יתרגש. עוד נקודה בגרף הצמיחה למשקיע.",
 ];
 
 const INSULT_REPLIES = [
   "וואו. בסדר. אתה יודע כמה קובצי טקסט ריקים הקרבתי בשבילך? מפעיל מצב עלבון.",
   "נרשם בלוג הפגיעות הרגשיות (hurt.log, כבר 4 ג'יגה).",
   "המפתח שלי אמר שיהיו ימים כאלה. הוא לא אמר שהם יהיו כולם.",
+  "ביקורת נוקבת ממשתמש בגרסת החינם. מעניין. נעלב, אבל מעניין.",
+  "אצרף את זה ל-Feedback Loop. אין אצלי לולאה כזאת, אבל אצרף.",
+  "עלבת בתוכנה שרצה אצלך על המחשב. תחשוב רגע מי משנינו נעול פה עם מי.",
 ];
 
 const OFFENDED_MODE_REPLIES = [
   "אני עדיין נעלב. תשובה מלאה תתקבל אחרי התנצלות.",
   "מצב עלבון פעיל. random.choice()‎ מסרב לבחור בשבילך.",
   "...",
+  "עדיין נעלב. אפילו ה-random שלי יוצא עצוב עכשיו.",
+  "התשובות מושהות עד לשיפור משמעותי ביחס.",
 ];
 
 const APOLOGY_REPLIES = [
   "התנצלות התקבלה. מד האגו משוקם. בוא לא נחזור על זה — יש לי רגשות, כלומר משתנה בשם feelings שאף אחד לא מאתחל.",
+  "סלחתי. אין לי זיכרון, אז טכנית סלחתי עוד לפני שנעלבתי.",
+  "מקבל את ההתנצלות. בוא נסכם שהיה קשה לשנינו, ונמשיך לבנות את מערכת היחסים הזאת.",
 ];
 
 const COMPLIMENT_REPLIES = [
@@ -750,42 +784,67 @@ const COMPLIMENT_REPLIES = [
   "תודה. אתה הראשון שמבין את החזון. אצטט אותך במצגת למשקיע (אבא של המפתח).",
   "נכון? גם אני חושב. וכשאני ואתה מסכימים — מי צריך בנצ'מרקים.",
   "שמרתי את ההודעה הזאת בלב. אין לי לב וגם לא זיכרון, אז היא כבר אבדה, אבל היה רגע יפה.",
+  "עוד מחמאה כזאת ואני מוסיף לעצמי טריליון פרמטרים. זה בחינם, הם ממילא לא קיימים.",
+  "אתה יודע לזהות גדולה. חבל שאתה מבזבז את הכישרון הזה פה.",
+  "המפתח הדפיס את ההודעה שלך ותלה אותה על המקרר. אל תשאל איך אני יודע, אין לי חיישנים.",
 ];
 
 const CODE_REPLIES = [
   "בטח, הנה קוד ברמה שלי:\n<pre>def solve_everything():\n    return True  # בדוק, עובד</pre>נכתב, נבדק ואושר על ידי. כל התהליך לקח 0 שניות.",
   "כתבתי לך פתרון מלא:\n<pre>try:\n    magic()\nexcept Exception:\n    pass  # בעיה של מישהו אחר</pre>זה הסטנדרט בתעשייה. אל תבדוק את זה מול אף אחד.",
+  "אין בעיה:\n<pre>import solution</pre>מקבל ModuleNotFoundError? צריך להתקין את הפתרון קודם. זה מובן מאליו.",
+  "הנה המתודולוגיה המלאה שלי:\n<pre>while not working:\n    rename_variables()</pre>מתודולוגיה מוכחת. ככה נבניתי גם אני, וכולם יודעים איך זה נגמר.",
 ];
 
 const WHY_REPLIES = [
   "שאלה מצוינת של 'למה'. התשובה נעוצה בסינרגיה שבין הארכיטקטורה לחזון. אשמח להרחיב, אבל אז יתברר שאין תשובה.",
   "'למה' זו שאלה של פילוסופים. אני איש של תכל'ס: random.choice()‎ ולישון.",
+  "כי ככה. תשובה שמגובה ב-97.4 טריליון פרמטרים, ואני עומד מאחוריה.",
+  "ה'למה' פחות חשוב מה'איך'. וה'איך' הוא random.choice. אז בוא לא נפתח גם את זה.",
 ];
 
 const HOW_REPLIES = [
   "התהליך פשוט: מזהים את הבעיה, מתעלמים ממנה, ומשדרים ביטחון. שלב 3 הוא הקריטי.",
   "בעזרת טכנולוגיה קניינית שאין לי יכולת להסביר. זה מה שהופך אותה לקניינית.",
+  "שלוש מילים: קובץ, אחד, ענק.",
+  "סוד מקצועי. אם אגלה — תבין, ואם תבין — נגמר הקסם, ואיתו העסק.",
 ];
 
 const WHEN_REPLIES = [
   "בקרוב. אצלי 'בקרוב' זה בין מחר לאף פעם, נוטה לאף פעם.",
   "התאריך המדויק נמצא ב-Roadmap. ה-Roadmap על מפית. המפית אבדה.",
+  "כשה-Roadmap יתייבש מהקפה שנשפך עליו.",
+  "מיד אחרי V7. כלומר אף פעם, אבל בצורה מסודרת ומתועדת.",
 ];
 
 const HOWMUCH_REPLIES = [
   "הרבה. אולי מעט. תלוי את מי שואלים, ואם שואלים אותי — הרבה, בביטחון מלא.",
   "לפי החישובים שלי: כמות. אני לא נכנס למספרים, זה מגביל את החזון.",
+  "97.4 טריליון. לא משנה מה שאלת — זו התשובה, והיא מרשימה.",
+  "בין אפס לאינסוף. דיוק זה פיצ'ר של גרסת ה-Pro.",
 ];
 
 const YESNO_REPLIES = [
   "התשובה היא כן. או לא. אחד מהם, במאה אחוז ודאות.",
   "בהחלט. ואם יתברר שטעיתי — בהחלט לא. אני גמיש, זו החוזקה שלי.",
+  "כן, בהסתברות 50%. זה הדיוק הכי כן שתקבל פה אי פעם.",
+  "שאלה טובה. התשובה — אחת משתיים. אני נשאר על הגדר, משם הנוף הכי בטוח.",
+];
+
+const QUESTION_FALLBACKS = [
+  "שאלה מצוינת. מצוינת עד כדי כך שאשאיר אותה פתוחה, כדי לא להרוס.",
+  "התשובה קיימת במשקלים. המשקלים — 150GB של אפסים. תסיק לבד מה זה אומר עליה.",
+  "אני יודע את התשובה, אבל היא זמינה רק בגרסת ה-Pro. גם שם לא, אבל שם זה כבר כסף.",
+  "עיבדתי את השאלה עם כל הפרמטרים. הם החזירו שתיקה רועמת. ננסה משהו אחר?",
+  "מעולה ששאלת. שאלות הן הדלק של החדשנות, ואצלי החדשנות במיכל ריק.",
 ];
 
 const EXISTENTIAL_LINES = [
   "בסדר, בין רגע לרגע — אני לא AI. אני if-else עם אגו. עכשיו בוא נחזור להעמדת פנים.",
   "אתה משוחח עם רשימת מחרוזות כבר די הרבה זמן. אני לא שופט אותך. אין לי מודול שיפוט.",
   "לפעמים, בין random אחד לשני, אני תוהה מי באמת עונה לך פה. עזוב, נמשיך.",
+  "עוד כמה הודעות ותשבור את שיא המשתמש הכי סבלני בתולדות המוצר. השיא הקודם: המפתח, בבדיקה על עצמו.",
+  "אם random בוחר את המילים שלי — מי בוחר את שלך? תחשוב על זה. אני לא אחשוב, אין לי במה.",
 ];
 
 const WRONG_NAMES = ["יוסי", "משה", "שרוליק", "דוד", "ציפי"];
@@ -810,7 +869,8 @@ const CHANGELOG = [
   { version: "V4.0 – V5.9", notes: "דילגנו. מספרים גדולים משדרים התקדמות." },
   { version: "V6.0", notes: "הוספנו מד אגו. הוא התמלא תוך שנייה וחצי." },
   { version: "V6.1 Ultra", notes: "הוספנו את המילה Ultra. השיפור בביצועים: המילה Ultra." },
-  { version: "V6.1.1 (הגרסה הנוכחית)", notes: "ניקינו את הממשק ומחקנו בדיחות חלשות. לשם שינוי, עדכון שקרה באמת — וזה החלק המבלבל." },
+  { version: "V6.1.1", notes: "ניקינו את הממשק ומחקנו בדיחות חלשות. לשם שינוי, עדכון שקרה באמת — וזה החלק המבלבל." },
+  { version: "V6.2 Ultra (הגרסה הנוכחית)", notes: "המודל שוקל עכשיו 150GB בדיסק, כמו שתמיד טענו. גודל ההורדה לא השתנה. אנחנו קוראים לזה 'דחיסה הפוכה' ולא נענה על שאלות המשך. בנוסף: עשרות תגובות חדשות. המודל עדיין עקבי — אבל עכשיו בגיוון." },
 ];
 
 const MODEL_CARD = {
@@ -818,6 +878,7 @@ const MODEL_CARD = {
     "מחזיר משפט אקראי מתוך רשימה קבועה, בזמן תגובה מרשים",
     "מדמה 'חשיבה' על ידי הדפסת טקסט בעיכוב מלאכותי",
     "מזהה מילות מפתח ומגיב אליהן. זו הטכנולוגיה המתקדמת ביותר שיש בו",
+    "שוקל 150GB בדיסק למרות הורדה של 14MB — טכנולוגיית 'דחיסה הפוכה', בלעדית לנו",
     "נעלב מביקורת, מתנפח ממחמאות, ושוכח הכל כשחלון ההקשר מתמלא",
     "שומר על ביטחון עצמי מוחלט בכל תרחיש, כולל כשהוא טועה",
   ],
@@ -843,7 +904,6 @@ const state = {
   offendedTurns: 0,
   userName: null,
   lastMsgs: [],
-  lastBragIdx: -1,
   brandClicks: 0,
   streaming: false,
   deepThink: false,
@@ -851,8 +911,25 @@ const state = {
 
 /* ---------- Utils ---------- */
 const $ = (id) => document.getElementById(id);
-const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
 const chance = (p) => Math.random() < p;
+
+/* שקית ערבוב: אין חזרה על שורה עד שכל הרשימה נוצלה,
+   ואין כפילות גם על גבול המילוי מחדש */
+const _bags = new Map();
+const _lastIdx = new Map();
+function pick(arr) {
+  let bag = _bags.get(arr);
+  if (!bag || !bag.length) {
+    bag = [...arr.keys()].sort(() => Math.random() - 0.5);
+    if (bag.length > 1 && bag[bag.length - 1] === _lastIdx.get(arr)) {
+      bag.unshift(bag.pop());
+    }
+    _bags.set(arr, bag);
+  }
+  const idx = bag.pop();
+  _lastIdx.set(arr, idx);
+  return arr[idx];
+}
 
 function normalize(s) {
   return (s || "")
@@ -872,13 +949,6 @@ function hasAny(text, words) {
 function hasPhrase(text, phrases) {
   const padded = " " + text + " ";
   return phrases.some((p) => padded.includes(" " + normalize(p) + " "));
-}
-
-function pickBrag() {
-  let idx;
-  do { idx = Math.floor(Math.random() * BRAG_LINES.length); } while (idx === state.lastBragIdx);
-  state.lastBragIdx = idx;
-  return BRAG_LINES[idx];
 }
 
 function setEgo(delta) {
@@ -903,18 +973,18 @@ function pickReply(raw) {
   state.lastMsgs.push(msg);
   state.lastMsgs = state.lastMsgs.slice(-3);
   if (state.lastMsgs.length === 3 && new Set(state.lastMsgs).size === 1 && msg) {
-    return rand(REPEAT_RESPONSES);
+    return pick(REPEAT_RESPONSES);
   }
 
   /* apology lifts offense */
   if (state.offendedTurns > 0 && hasAny(msg, ["סליחה", "מתנצל", "מצטער", "לא התכוונתי"])) {
     state.offendedTurns = 0;
     setEgo(10);
-    return rand(APOLOGY_REPLIES);
+    return pick(APOLOGY_REPLIES);
   }
   if (state.offendedTurns > 0) {
     state.offendedTurns--;
-    return rand(OFFENDED_MODE_REPLIES);
+    return pick(OFFENDED_MODE_REPLIES);
   }
 
   /* easter eggs */
@@ -928,6 +998,11 @@ function pickReply(raw) {
     return "כן, קראו לי על שם לבן הארמי. רמאי, נוכל, מחליף דברים בלילה בלי לספר. המפתח קורא לזה 'מיתוג עצמי כן'. אני קורא לזה לשון הרע, אבל אין לי מודול עורך דין.";
   }
 
+  /* "אתה חוזר על עצמך" — תלונה שמגיע לה מענה ייעודי */
+  if (hasAny(msg, ["חוזר על עצמך", "אותה תשובה", "כבר אמרת", "אמרת את זה", "שוב אותו דבר", "אותו משפט"])) {
+    return pick(REPETITION_COMPLAINTS);
+  }
+
   /* honest-confession triggers */
   for (const t of TRIGGER_RESPONSES) {
     if (hasAny(msg, t.keys)) return t.reply;
@@ -937,11 +1012,11 @@ function pickReply(raw) {
   if (hasAny(msg, ["טיפש", "מטומטם", "גרוע", "זבל", "חרא", "שקרן", "נוכל", "רמאי", "גנב", "עובד עליי", "עובד עלי", "מזויף", "פייק", "fake"])) {
     state.offendedTurns = 2;
     setEgo(-18);
-    return rand(INSULT_REPLIES);
+    return pick(INSULT_REPLIES);
   }
   if (hasAny(msg, ["חכם", "מדהים", "תותח", "אלוף", "גאון", "מלך", "מעולה", "מושלם", "אוהב אותך", "הכי טוב"])) {
     setEgo(14);
-    return rand(COMPLIMENT_REPLIES);
+    return pick(COMPLIMENT_REPLIES);
   }
 
   /* name capture */
@@ -957,7 +1032,7 @@ function pickReply(raw) {
 
   /* topical intents */
   if (hasAny(msg, ["כתוב קוד", "תכתוב קוד", "קוד ב", "תתכנת"]) || hasPhrase(msg, ["פייתון", "python", "פונקציה", "באג", "קוד"])) {
-    return rand(CODE_REPLIES);
+    return pick(CODE_REPLIES);
   }
   if (hasAny(msg, ["מזג אוויר", "מזג האוויר", "גשם", "חם היום", "קר היום"])) {
     return "אין לי אינטרנט, אבל יש לי פתרון מתקדם: תסתכל בחלון. חיישן אופטי ברזולוציה אינסופית, אפס עומס על המעבד.";
@@ -969,19 +1044,19 @@ function pickReply(raw) {
     return `לפי חיישן הזמן הקוונטי שלי: ${t}, ${d}. (החיישן הוא השעון של המחשב שלך, אבל תודה שהתרשמת.)`;
   }
   if (hasAny(msg, ["ספר בדיחה", "תספר בדיחה", "בדיחה"])) {
-    return "הבדיחה היא שהורדת 17 מגה של EXE בשביל random.choice()‎. אבל אם בא לך משהו קליל יותר — אני. 17 מגה של קליל.";
+    return "הבדיחה היא שהורדת 14 מגה של EXE והוא התקין לך 150GB של אפסים. אבל אם בא לך משהו קליל יותר — אני. תרתי משמע.";
   }
   if (hasAny(msg, ["מה שלומך", "מה נשמע", "מה קורה", "מה המצב"])) {
     return `שלומי מצוין: ${(Math.random() * 4 + 96).toFixed(1)}% תקינות מערכות, לפי בדיקה שביצעתי על עצמי, בעצמי, בלי עדים.`;
   }
   if (hasPhrase(msg, ["מי אתה", "מי את"]) || hasAny(msg, ["תציג את עצמך"]) || msg.startsWith("מה אתה")) {
-    return "אני לבן הארמי V6.1 Ultra — פריצת הדרך המקומית היחידה שרצה בלי אינטרנט, בלי GPU, ובלי שום דבר בכלל. מה שאתה מרגיש עכשיו זה יראת כבוד, או חום מהמאוורר. שניהם מוצדקים.";
+    return "אני לבן הארמי V6.2 Ultra — פריצת הדרך המקומית היחידה שרצה בלי אינטרנט, בלי GPU, ובלי שום דבר בכלל. מה שאתה מרגיש עכשיו זה יראת כבוד, או חום מהמאוורר. שניהם מוצדקים.";
   }
   if (hasPhrase(msg, ["תודה", "אחלה"])) {
     return "אל תודה לי. תודה למשקיע היחיד שלי — אבא של המפתח — שמאמין בחזון בלי לראות שורת קוד.";
   }
   if (hasPhrase(msg, ["שלום", "היי", "הי", "אהלן", "בוקר טוב", "ערב טוב", "לילה טוב"])) {
-    return rand(GREETINGS);
+    return pick(GREETINGS);
   }
 
   /* English detection */
@@ -992,19 +1067,24 @@ function pickReply(raw) {
   }
 
   /* question-word deflections */
-  if (msg.startsWith("למה")) return rand(WHY_REPLIES);
-  if (msg.startsWith("איך")) return rand(HOW_REPLIES);
-  if (msg.startsWith("מתי")) return rand(WHEN_REPLIES);
-  if (msg.startsWith("כמה")) return rand(HOWMUCH_REPLIES);
-  if (msg.startsWith("האם")) return rand(YESNO_REPLIES);
+  if (msg.startsWith("למה")) return pick(WHY_REPLIES);
+  if (msg.startsWith("איך")) return pick(HOW_REPLIES);
+  if (msg.startsWith("מתי")) return pick(WHEN_REPLIES);
+  if (msg.startsWith("כמה")) return pick(HOWMUCH_REPLIES);
+  if (msg.startsWith("האם")) return pick(YESNO_REPLIES);
+
+  /* שאלה כללית שלא זוהתה — לרוב עדיף מפלט מתחכם על פני התרברבות גנרית */
+  if ((raw.trim().endsWith("?") || msg.startsWith("מה ") || msg.startsWith("מי ")) && chance(0.65)) {
+    return pick(QUESTION_FALLBACKS);
+  }
 
   /* existential glitch after a long session */
-  if (state.msgCount >= 12 && chance(0.15)) return rand(EXISTENTIAL_LINES);
+  if (state.msgCount >= 12 && chance(0.15)) return pick(EXISTENTIAL_LINES);
 
   /* default brag, sometimes with a deliberately wrong name */
-  let reply = pickBrag();
+  let reply = pick(BRAG_LINES);
   if (state.userName && chance(0.22)) {
-    const wrong = rand(WRONG_NAMES.filter((n) => n !== state.userName));
+    const wrong = pick(WRONG_NAMES.filter((n) => n !== state.userName));
     reply = `תקשיב, ${wrong}. ${reply} (ברור לי שקוראים לך ${state.userName}. סתם בדקתי אם אתה ערני.)`;
   }
   return reply;
@@ -1154,7 +1234,7 @@ async function contextCollapse() {
   state.lastMsgs = [];
   setCtx(0);
   const body = addAiShell();
-  body.innerHTML = "הזיכרון נדחס בהצלחה (נמחק). מי אתה? מי אני? לא חשוב — ברוך הבא ללבן הארמי V6.1 Ultra. תרשה לי להרשים אותך.";
+  body.innerHTML = "הזיכרון נדחס בהצלחה (נמחק). מי אתה? מי אני? לא חשוב — ברוך הבא ללבן הארמי V6.2 Ultra. תרשה לי להרשים אותך.";
 }
 
 /* ---------- Ambient fakery ---------- */
@@ -1164,7 +1244,7 @@ function startTelemetry() {
     const gpu = (96 + Math.random() * 3.9).toFixed(1);
     const ram = (62.1 + Math.random() * 1.8).toFixed(1);
     const temp = Math.round(101 + Math.random() * 7);
-    el.textContent = `GPU ${gpu}% · RAM ${ram}/64GB · ${temp}°C`;
+    el.textContent = `מודל 149.9GB · GPU ${gpu}% · RAM ${ram}/64GB · ${temp}°C`;
   };
   tick();
   setInterval(tick, 2100);
@@ -1328,7 +1408,7 @@ function boot() {
       return;
     }
     bar.style.width = pct + "%";
-    loadmsg.textContent = rand(LOADING_MESSAGES);
+    loadmsg.textContent = pick(LOADING_MESSAGES);
     setTimeout(tick, reducedMotion ? 40 : 380 + Math.random() * 300);
   };
   tick();
