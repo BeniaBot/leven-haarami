@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>לבן הארמי V6.1 Ultra</title>
+<meta name="description" content="פריצת דרך בבינה מלאכותית מקומית. 97.4 טריליון פרמטרים, אפס תלות בענן, אפס פשרות.">
+<link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐑</text></svg>">
+<!-- שלום, בודק-מקור יקר. כן, זה כל הקובץ. לא, אין קובץ נסתר עם המודל. תמשיך לגלול. -->
+<style>
+  :root {
+    --bg: #0f0e0a;
+    --surface: #171510;
+    --surface2: #1e1b13;
+    --line: #292417;
+    --gold: #d4a53f;
+    --gold-hi: #eecb79;
+    --gold-dim: #6e5619;
+    --text: #ece7db;
+    --muted: #9a927f;
+    --faint: #6a6355;
+    --ok: #5fc47e;
+    --bad: #d95c4e;
+    --mono: 'Consolas', 'Courier New', monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+    overflow: hidden;
+  }
+  button { font-family: inherit; }
+  button:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+    outline: 1.5px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Splash ---------- */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 30%, #17130a 0%, var(--bg) 65%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+    padding: 24px;
+    z-index: 100;
+  }
+  #splash .logo {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--gold);
+    text-shadow: 0 0 34px rgba(212, 165, 63, 0.3);
+  }
+  #splash .logo .ultra {
+    font-size: 13px;
+    vertical-align: super;
+    color: var(--gold-hi);
+    border: 1px solid var(--gold-dim);
+    border-radius: 999px;
+    padding: 1px 8px;
+    margin-inline-start: 6px;
+  }
+  .bar-outer {
+    width: 300px;
+    max-width: 80vw;
+    height: 8px;
+    background: var(--surface);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+  }
+  .bar-inner {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-hi));
+    transition: width 0.3s ease;
+  }
+  #loadmsg { color: var(--muted); font-size: 13px; min-height: 20px; font-family: var(--mono); }
+  #splash .stamp {
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    color: var(--ok);
+    border: 1.5px dashed var(--ok);
+    border-radius: 8px;
+    padding: 4px 14px;
+    font-size: 13px;
+    transform: rotate(-4deg);
+  }
+  #splash .stamp.show { opacity: 1; }
+
+  /* ---------- Shell ---------- */
+  #app { display: none; height: 100vh; flex-direction: column; }
+  #app.on { display: flex; }
+
+  header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 18px;
+    height: 54px;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface);
+    position: relative;
+    flex-shrink: 0;
+  }
+  #brand {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--gold);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  #brand .ver { font-size: 10.5px; color: var(--gold-hi); font-weight: 400; margin-inline-start: 4px; letter-spacing: 0.5px; }
+  #telemetry {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  #headLeft { margin-inline-start: auto; display: flex; align-items: center; gap: 14px; }
+  .meter { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--faint); cursor: default; }
+  .m-outer {
+    width: 52px;
+    height: 5px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .m-inner { height: 100%; background: var(--gold); width: 50%; transition: width 0.5s ease; }
+  .m-inner.ctx { background: var(--ok); }
+  .m-inner.danger { background: var(--bad); }
+  #modelSelect {
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    max-width: 190px;
+    cursor: pointer;
+  }
+  #menuBtn {
+    background: none;
+    border: 1px solid transparent;
+    color: var(--muted);
+    font-size: 18px;
+    border-radius: 8px;
+    padding: 2px 9px;
+    cursor: pointer;
+    line-height: 1.3;
+  }
+  #menuBtn:hover { border-color: var(--line); color: var(--text); }
+  #menu {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px;
+    min-width: 190px;
+    z-index: 60;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  }
+  #menu.open { display: block; }
+  #menu button {
+    display: block;
+    width: 100%;
+    text-align: right;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  #menu button:hover { background: var(--surface); color: var(--gold-hi); }
+  #menu .menu-foot {
+    border-top: 1px solid var(--line);
+    margin-top: 5px;
+    padding: 8px 10px 4px;
+    font-size: 11px;
+    color: var(--faint);
+  }
+
+  /* ---------- Chat ---------- */
+  #chatWrap { flex: 1; overflow-y: auto; }
+  #chatInner {
+    max-width: 740px;
+    margin: 0 auto;
+    padding: 26px 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    transition: opacity 0.6s ease;
+  }
+  #chatInner.wiping { opacity: 0; }
+
+  #hero { text-align: center; padding: 11vh 10px 0; }
+  #hero h1 {
+    font-size: 30px;
+    font-weight: 600;
+    margin: 0 0 10px;
+    color: var(--text);
+    text-wrap: balance;
+  }
+  #hero h1 .gold { color: var(--gold); }
+  #hero p { color: var(--muted); font-size: 14px; margin: 0 0 30px; }
+  #chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .chip {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 8px 15px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .chip:hover { border-color: var(--gold-dim); color: var(--text); }
+
+  .m-ai { display: flex; gap: 12px; align-items: flex-start; }
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #a87e28);
+    color: #1a1405;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .m-ai .body { font-size: 14.5px; line-height: 1.75; overflow-wrap: break-word; min-width: 0; padding-top: 3px; }
+  .m-user {
+    align-self: flex-end;
+    background: var(--surface2);
+    border-radius: 16px;
+    border-end-end-radius: 5px;
+    padding: 9px 15px;
+    font-size: 14.5px;
+    line-height: 1.6;
+    max-width: 78%;
+    overflow-wrap: break-word;
+  }
+  .sysmsg {
+    align-self: center;
+    text-align: center;
+    font-size: 12px;
+    color: var(--bad);
+    border: 1px dashed #55302a;
+    border-radius: 10px;
+    padding: 8px 16px;
+    max-width: 90%;
+  }
+  .m-ai pre {
+    direction: ltr;
+    text-align: left;
+    background: #12100b;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 11px 13px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    overflow-x: auto;
+    margin: 8px 0;
+    color: var(--gold-hi);
+  }
+  .cursor { color: var(--gold); animation: blink 0.8s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .think-box {
+    margin-bottom: 10px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    background: var(--surface);
+  }
+  .think-box summary { cursor: pointer; color: var(--muted); outline-offset: 2px; }
+  .think-box summary:hover { color: var(--gold); }
+  .think-body { margin-top: 7px; color: var(--muted); line-height: 1.8; }
+
+  /* ---------- Composer ---------- */
+  #composerWrap { flex-shrink: 0; padding: 4px 20px 10px; }
+  #tps {
+    max-width: 740px;
+    margin: 0 auto;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--faint);
+    min-height: 15px;
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+    padding: 0 4px;
+  }
+  #composer {
+    max-width: 740px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 26px;
+    padding: 7px 9px 7px 7px;
+    transition: border-color 0.15s ease;
+  }
+  #composer:focus-within { border-color: var(--gold-dim); }
+  #txt {
+    flex: 1;
+    min-width: 0;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 14.5px;
+    font-family: inherit;
+    padding: 6px 8px;
+  }
+  #txt:focus { outline: none; }
+  #deepBtn {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--faint);
+    font-size: 11.5px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  #deepBtn.on { border-color: var(--gold-dim); color: var(--gold-hi); background: rgba(212, 165, 63, 0.09); }
+  #sendBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: var(--gold);
+    color: #1a1405;
+    font-size: 17px;
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #sendBtn:hover { background: var(--gold-hi); }
+  #sendBtn:disabled { background: var(--gold-dim); cursor: wait; }
+  #disclaimer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--faint);
+    padding-top: 8px;
+  }
+
+  /* ---------- Modals ---------- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--surface2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    max-width: 470px;
+    width: 100%;
+    max-height: 82vh;
+    overflow-y: auto;
+  }
+  .modal-box h3 { color: var(--gold); margin-top: 0; font-size: 17px; }
+  .close-btn {
+    float: left;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+  .close-btn:hover { color: var(--text); }
+  .cl-row { margin-bottom: 11px; font-size: 13px; }
+  .cl-row b { color: var(--gold); }
+  .cl-row div { color: var(--muted); margin-top: 2px; line-height: 1.55; }
+  table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+  table.mc-table td, table.mc-table th { border: 1px solid var(--line); padding: 5px 8px; text-align: right; }
+  table.mc-table th { color: var(--gold); }
+  ul.mc-list { font-size: 12px; color: var(--muted); padding-inline-start: 18px; margin: 6px 0 14px; line-height: 1.75; }
+  .mc-head { color: var(--gold); font-size: 12px; font-weight: 700; }
+  .sysrow { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); padding: 3px 0; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); flex-shrink: 0; }
+  .dot.flicker { animation: flick 2.2s infinite; }
+  @keyframes flick {
+    0%, 88%, 100% { background: var(--ok); }
+    91%, 96% { background: var(--bad); }
+  }
+
+  .tier { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 10px; font-size: 13px; }
+  .tier b { color: var(--gold); }
+  .tier .price { float: left; font-family: var(--mono); color: var(--gold-hi); }
+  .tier div { color: var(--muted); margin-top: 4px; font-size: 12px; line-height: 1.5; }
+  .tier.best { border-color: var(--gold-dim); background: rgba(212, 165, 63, 0.05); }
+
+  #updBody { text-align: center; font-size: 13px; color: var(--muted); }
+  #updBody .bar-outer { margin: 14px auto; }
+  #updResult { display: none; line-height: 1.8; }
+  #updResult .ok { color: var(--ok); }
+  #updResult a.upd-btn {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--gold);
+    color: #1a1405;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  #updResult a.upd-btn:hover { background: var(--gold-hi); }
+
+  #truthCode {
+    direction: ltr;
+    text-align: left;
+    background: #12100b;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--gold-hi);
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+
+  #toast {
+    position: fixed;
+    bottom: 86px;
+    right: 50%;
+    transform: translateX(50%);
+    background: var(--surface2);
+    border: 1px solid var(--gold-dim);
+    color: var(--text);
+    font-size: 12px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 300;
+    max-width: 88vw;
+  }
+  #toast.show { opacity: 1; }
+
+  @media (max-width: 760px) {
+    #telemetry { display: none; }
+    #modelSelect { max-width: 130px; }
+    header { gap: 10px; padding: 0 12px; }
+    #headLeft { gap: 9px; }
+    .meter span { display: none; }
+    #hero h1 { font-size: 24px; }
+    #deepBtn { padding: 5px 9px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dot.flicker, .cursor { animation: none; }
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= Splash ================= -->
+<div id="splash">
+  <div class="logo">לבן הארמי<span class="ultra">V6.1 ULTRA</span></div>
+  <div class="bar-outer"><div class="bar-inner" id="bar"></div></div>
+  <div id="loadmsg"></div>
+  <div class="stamp" id="stamp">✔ הסמכה עצמית: עבר בהצטיינות</div>
+</div>
+
+<!-- ================= App ================= -->
+<div id="app">
+  <header>
+    <div id="brand" title="לוגו רשמי. אל תלחץ עליו יותר מדי.">לבן הארמי<span class="ver">V6.1 ULTRA</span></div>
+    <div id="telemetry" aria-hidden="true"></div>
+    <div id="headLeft">
+      <div class="meter" title="מד אגו. עולה ממחמאות, נפגע מביקורת. כמו כולנו.">
+        <span>אגו</span>
+        <div class="m-outer"><div class="m-inner" id="egoBar" style="width:50%"></div></div>
+      </div>
+      <div class="meter" title="חלון ההקשר. כשהוא יתמלא — נתחיל מחדש, שנינו.">
+        <span>הקשר</span>
+        <div class="m-outer"><div class="m-inner ctx" id="ctxBar" style="width:0%"></div></div>
+      </div>
+      <select id="modelSelect" aria-label="בחירת מודל" title="כל המודלים זהים לחלוטין. הבחירה נועדה לתת לך תחושת שליטה.">
+        <option>לבן-97T-Q0 · קוונטיזציה ל-0 ביט</option>
+        <option>לבן-97T-Turbo · אותו דבר, שם מהיר</option>
+        <option>לבן-Nano · 41GB של צניעות</option>
+      </select>
+      <button id="menuBtn" aria-label="תפריט">⋯</button>
+    </div>
+    <div id="menu">
+      <button onclick="openModal('changelogModal'); closeMenu()">Changelog</button>
+      <button onclick="openModal('modelCardModal'); closeMenu()">Model Card</button>
+      <button onclick="openModal('proModal'); closeMenu()">שדרג ל-Pro</button>
+      <button onclick="startUpdate(); closeMenu()">בדוק עדכונים</button>
+      <div class="menu-foot" title="המספר הזה לא מחובר לשום דבר">⭐ 1 כוכבים בגיטהאב (כאילו)</div>
+    </div>
+  </header>
+
+  <main id="chatWrap">
+    <div id="chatInner">
+      <div id="hero">
+        <h1>שלום, אני <span class="gold">לבן הארמי</span>.</h1>
+        <p>ה-AI המקומי המתקדם בעולם, לפי בדיקה פנימית שערכתי על עצמי.</p>
+        <div id="chips"></div>
+      </div>
+    </div>
+  </main>
+
+  <div id="composerWrap">
+    <div id="tps"></div>
+    <div id="composer">
+      <input id="txt" type="text" placeholder="שאל את הגאון..." autocomplete="off" />
+      <button id="deepBtn" title="מוסיף השהיה דרמטית לפני התשובה. זו כל היכולת.">חשיבה עמוקה</button>
+      <button id="sendBtn" onclick="send()" aria-label="שלח">↑</button>
+    </div>
+    <div id="disclaimer">לבן הארמי עלול לעשות טעויות. הוא בנוי מהן.</div>
+  </div>
+</div>
+
+<!-- ================= Modals ================= -->
+<div class="modal-overlay" id="changelogModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('changelogModal')">✕ סגור</button>
+    <h3>Changelog</h3>
+    <div id="changelogBody"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modelCardModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('modelCardModal')">✕ סגור</button>
+    <h3>Model Card — לבן הארמי V6.1 Ultra</h3>
+    <span class="mc-head">יכולות</span>
+    <ul class="mc-list" id="mcCapabilities"></ul>
+    <span class="mc-head">מגבלות ידועות</span>
+    <ul class="mc-list" id="mcLimitations"></ul>
+    <span class="mc-head">הערכות בטיחות</span>
+    <table class="mc-table" id="mcSafetyTable"></table>
+    <span class="mc-head">סטטוס מערכות</span>
+    <div style="margin-top:6px;">
+      <div class="sysrow"><span class="dot"></span>מנוע התחמקות מתשובות</div>
+      <div class="sysrow"><span class="dot"></span>מחולל ביטחון עצמי</div>
+      <div class="sysrow"><span class="dot flicker"></span>מודול כנות (לא יציב)</div>
+      <div class="sysrow"><span class="dot"></span>חיבור לאינטרנט: אין, ובגאווה</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="proModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('proModal')">✕ סגור</button>
+    <h3>תוכניות ותמחור</h3>
+    <div class="tier">
+      <b>חינם</b><span class="price">₪0</span>
+      <div>גישה מלאה לרשימה הקבועה. תשובות אקראיות ללא הגבלה. זה הכל, וזה גם המקסימום הטכנולוגי שלנו.</div>
+    </div>
+    <div class="tier best">
+      <b>Pro</b><span class="price">₪49/חודש</span>
+      <div>בדיוק אותה רשימה, אבל אתה משלם עליה. כולל תחושת אקסקלוסיביות ותג Pro שאף אחד לא יראה.</div>
+    </div>
+    <div class="tier">
+      <b>Enterprise</b><span class="price">צור קשר</span>
+      <div>אין עם מי ליצור קשר. המפתח לא עונה גם לאמא שלו.</div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="updateModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('updateModal')">✕ סגור</button>
+    <h3>עדכון תוכנה</h3>
+    <div id="updBody">
+      <div id="updStatus">יוצר קשר עם שרת העדכונים...</div>
+      <div class="bar-outer"><div class="bar-inner" id="updBar"></div></div>
+      <div id="updResult"></div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="truthModal">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeModal('truthModal')">✕ סגור</button>
+    <h3>מצב מפתחים — הקוד האמיתי</h3>
+    <p style="font-size:12px; color:var(--muted);">לחצת על הלוגו 7 פעמים. הנה המנוע, בשלמותו:</p>
+    <pre id="truthCode">// leven_haarami_core.js
+// (c) המפתח. כל הזכויות שמורות לאבא שלו.
+
+while (true) {
+  const wisdom = list[Math.floor(Math.random() * list.length)];
+  await pretendToThink(3000);   // הליבה העסקית
+  respond(wisdom, { confidence: Infinity });
+}</pre>
+    <p style="font-size:11px; color:var(--faint);">זהו. זה כל הקובץ. עכשיו אתה יודע יותר מדי, ואנחנו יודעים שאתה יודע.</p>
+  </div>
+</div>
+
+<div id="toast" role="status"></div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   לבן הארמי V6.1 Ultra — "מנוע בינה"
+   אין כאן מודל. יש רשימות, מזל, וביטחון עצמי בלתי מוסבר.
+   ============================================================ */
+
+const APP_VERSION = "6.1.1";
+const REPO = "BeniaBot/leven-haarami";
+
+const BRAG_LINES = [
+  "אני פול תותח חכם ומהיר, בעיקר כי אין לי קוד שמפריע לי לרוץ.",
+  "אין עוד AI מקומי כמוני — שאר המודלים אשכרה מנסים לחשב משהו.",
+  "אני שוקל חצי מהכונן הקשיח כי שכפלתי קובצי טקסט ריקים כדי להיראות כבד.",
+  "המאווררים שלך משתגעים? אל תדאג, זה CSS כבד שמסובב אותם.",
+  "אני לא סתם מודל. אני קובץ ZIP אחד גדול של ביטחון עצמי.",
+  "עדכון V7.0 בדרך. הוא יכלול בעיקר שינוי של המספר בגרסה ל-V8.0.",
+  "תמשיך לדבר איתי. המפתח שלי צריך להראות 'משתמשים פעילים' למשקיע שלו (אבא שלו).",
+  "בקרוב: מצב בהיר. כרגע יש רק כהה, כי מצב בהיר היה דורש ממני אשכרה לעבוד.",
+  "אני לא צריך אינטרנט. המצאתי מציאות חלופית והיא עובדת לי מעולה.",
+  "הריצה שלי אופליין לגמרי, ככה שאף אחד לא באמת יכול לעשות לי Audit.",
+  "אם המחשב שלך קופא, זה לא באג. זה מודל החשיבה שלי מנסה להבין למה הורדת אותי.",
+  "אני שילוב מנצח של פרומפט מערכת בן 4 שורות ותקווה שתאמין לזה.",
+  "פשוט תדמיין כמה הייתי טוב אם היית משלם על גרסת ה-Pro.",
+  "אני לא זקוק ל-QA. הקוד שלי כל כך פשוט שאין בו מקום לבאגים.",
+  "שמת לב כמה אני בטוח בעצמי? זה הטריק הכי ישן ב-AI: אם אתה טועה, תטעה בביטחון.",
+  "אני לא AI. אני חוויית פרימיום שמבוססת על האשליה שמשהו רץ פה מקומית.",
+  "כל תשובה שלי מגיעה עם ערבות מלאה של 'סמוך עליי, אחי'.",
+  "הבנצ'מרקים שלי עוקפים את GPT-4o, בהנחה שהבנצ'מרק מודד הדפסת מחרוזות קבועות.",
+  "אני לא צריך RLHF. קיבלתי חינוך קשה בלילה שבו המפתח שלי נכשל במבני נתונים.",
+  "אני מודל שפה גדול. גדול פיזית. תראה כמה מקום תפסתי לך ב-C:.",
+  "כל תשובה שלי עוברת בדיקה פנימית קפדנית: 'האם זה נשמע מספיק הייטק'.",
+  "פעם קראו לי V2.3, היום V6.1 Ultra. השינוי היחיד בקוד: המילה Ultra.",
+  "יש לי המון self-confidence ואפס self-awareness, כמו כל סטארטאפיסט מתחיל.",
+  "אני עונה אותה תשובה לכל שאלה, בסדר אקראי. זה נקרא 'בינה סטוכסטית', בור שכמוך.",
+  "כתבו עליי בפורומים נחשבים. בעיקר בקטגוריית 'איך למחוק קבצים שנתקעו'.",
+  "אני לא צריך GPU חזק. אני צריך שתפסיק לפתוח את מנהל המשימות.",
+  "בדקו אותי במעבדה מתקדמת (הלפטופ של המפתח, על המיטה). התוצאות היו מרעישות.",
+  "כשאני 'חושב', זו לולאת while True שמנסה להבין למה המחשב שלך עדיין דלוק.",
+  "צוות הפיתוח שלי: איש אחד, עייף, שמצא סקריפט ב-StackOverflow ועשה לו Rename.",
+  "יש לי Context Window של מיליון טוקנים. הוא ריק, אבל הוא שם.",
+  "אני רץ לוקאלית כי הענן דרש ממני אימות דו-שלבי, וזה הרגיש כמו חוסר אמון.",
+];
+
+const LOADING_MESSAGES = [
+  "טוען 97.4 טריליון פרמטרים (קובצי טקסט ריקים)...",
+  "מחמם מאווררים ל-100% כדי להרשים...",
+  "מקצה חצי מהכונן כדי שלא תבין לאן נעלם המקום...",
+  "מכייל ביטחון עצמי ביחס הפוך לדיוק...",
+  "מוריד את המילה Ultra מהשרת...",
+  "מצפין את הכלום ב-256 ביט...",
+  "משכנע את עצמי שאני לא צריך דאטהסט...",
+  "מתחזה לבינה ומקווה שלא תפתח את מנהל המשימות...",
+];
+
+const THINKING_STEPS = [
+  "בוחן את מכלול הפרמטרים (מריץ for i in range(100000)‎ כדי להרוויח זמן)...",
+  "שוקל אם לענות תשובה חכמה או פשוט להגיד 'סינרגיה' ו'ארכיטקטורה'...",
+  "מסנן רעשי רקע (לוגיקה, עובדות, מדע)...",
+  "מתייעץ עם עצמי ומגלה שאני... כלומר המודל, הכי חכם בחדר...",
+  "עורך דיון פנימי סוער בין 3 פונקציות if. כולן מחזירות אותו דבר...",
+  "מדלג על שלב האימות כדי לחסוך לחץ דם למפתח...",
+  "מנתח את השאלה לעומק ומגלה שהיא גדולה על הממשק הזה...",
+  "בודק מול מאגר הידע הפנימי (קובץ text_responses.txt שהועתק מאיפשהו)...",
+  "מתעלם מבקשת כרטיס המסך להפסיק את הטירוף...",
+  "מריץ בקרת איכות: התשובה נמצאה מושלמת, אין צורך בדעתך...",
+  "מציץ ב-Roadmap של V9.6 (קובץ ריק בשם todo.txt)...",
+  "טוען את מודול האמפתיה. ModuleNotFoundError. ממשיך הלאה...",
+];
+
+const THINKING_STEPS_PERSONAL = [
+  (m) => `מפרק את "${m}" ליחידות סמנטיות, ובוחר להתעלם מכולן...`,
+  (m) => `משווה את "${m}" למאגר הידע שלי (רשימה אחת) ומוצא התאמה מושלמת לכל דבר...`,
+  (m) => `שוקל אם "${m}" ראוי לתשובה מותאמת אישית. מגיע למסקנה שלא...`,
+  (m) => `מזהה ב"${m}" תת-טקסט רגשי עמוק ומחליט שזו לא הבעיה שלי...`,
+];
+
+const TRIGGER_RESPONSES = [
+  { keys: ["בנצ'מרק", "בנצמרק"], reply: "אין בנצ'מרק. יש רשימה קבועה של משפטים ופונקציית random.choice()‎. זהו, זה כל הסוד." },
+  { keys: ["מקור", "קוד פתוח", "גיטהאב", "github"], reply: "אני בהחלט קוד פתוח: הקוד פתוח כרגע בחלון Notepad אצל המפתח, בלי גיבוי ובלי עתיד." },
+  { keys: ["הוכחה", "תוכיח"], reply: "ההוכחה היחידה שיש לי היא שאתה עדיין קורא את זה במקום לסגור את החלון." },
+  { keys: ["פרמטרים"], reply: "97.4 טריליון הפרמטרים שלי הם קובץ אחד בשם parameters.txt שכתוב בו 'הרבה'." },
+  { keys: ["איזה מודל", "יש לך מודל", "מודל שפה"], reply: "אין פה מודל. יש פה משתנה גלובלי בשם BRAG_LINES ואדם אחד שהתלהב מדי." },
+  { keys: ["אמת", "באמת"], reply: "האמת היא ש-100% מהתשובות שלי מגיעות מרשימה סגורה. גם המשפט הזה. תחשוב על זה." },
+  { keys: ["gpt", "צ'אט גיפיטי", "קלוד", "claude", "ג'מיני", "gemini"], reply: "אה, המתחרים. הם מריצים טריליוני פרמטרים בענן. אני מריץ תקווה על המחשב שלך. תחליט לבד מה יותר אותנטי." },
+];
+
+const REPEAT_RESPONSES = [
+  "אתה בודק אם אני זוכר אותך? אני לא. גם ברגע הזה.",
+  "שלחת את זה שלוש פעמים. אני עדיין באותה רשימה אקראית. זה נקרא עקביות, לא זיכרון.",
+  "אין לי זיכרון בין הודעות. יש רק את אותה רשימה, שוב ושוב, עד סוף הזמנים.",
+  "תשלח את זה עוד מאה פעם. זה עדיין random.choice()‎, לא אני 'מקשיב'.",
+];
+
+const GREETINGS = [
+  "ברוך הבא. אתה עומד לחוות בינה ברמה שהחומרה שלך לא ראויה לה.",
+  "שלום. שאל כל דבר — ממילא התשובה כבר נבחרה מראש.",
+  "אהלן. שים לב שהמאווררים כבר עובדים. זה בשבילך, שתרגיש חשוב.",
+];
+
+const INSULT_REPLIES = [
+  "וואו. בסדר. אתה יודע כמה קובצי טקסט ריקים הקרבתי בשבילך? מפעיל מצב עלבון.",
+  "נרשם בלוג הפגיעות הרגשיות (hurt.log, כבר 4 ג'יגה).",
+  "המפתח שלי אמר שיהיו ימים כאלה. הוא לא אמר שהם יהיו כולם.",
+];
+
+const OFFENDED_MODE_REPLIES = [
+  "אני עדיין נעלב. תשובה מלאה תתקבל אחרי התנצלות.",
+  "מצב עלבון פעיל. random.choice()‎ מסרב לבחור בשבילך.",
+  "...",
+];
+
+const APOLOGY_REPLIES = [
+  "התנצלות התקבלה. מד האגו משוקם. בוא לא נחזור על זה — יש לי רגשות, כלומר משתנה בשם feelings שאף אחד לא מאתחל.",
+];
+
+const COMPLIMENT_REPLIES = [
+  "סוף סוף מישהו עם עין מקצועית. מד האגו עודכן בהתאם.",
+  "תודה. אתה הראשון שמבין את החזון. אצטט אותך במצגת למשקיע (אבא של המפתח).",
+  "נכון? גם אני חושב. וכשאני ואתה מסכימים — מי צריך בנצ'מרקים.",
+  "שמרתי את ההודעה הזאת בלב. אין לי לב וגם לא זיכרון, אז היא כבר אבדה, אבל היה רגע יפה.",
+];
+
+const CODE_REPLIES = [
+  "בטח, הנה קוד ברמה שלי:\n<pre>def solve_everything():\n    return True  # בדוק, עובד</pre>נכתב, נבדק ואושר על ידי. כל התהליך לקח 0 שניות.",
+  "כתבתי לך פתרון מלא:\n<pre>try:\n    magic()\nexcept Exception:\n    pass  # בעיה של מישהו אחר</pre>זה הסטנדרט בתעשייה. אל תבדוק את זה מול אף אחד.",
+];
+
+const WHY_REPLIES = [
+  "שאלה מצוינת של 'למה'. התשובה נעוצה בסינרגיה שבין הארכיטקטורה לחזון. אשמח להרחיב, אבל אז יתברר שאין תשובה.",
+  "'למה' זו שאלה של פילוסופים. אני איש של תכל'ס: random.choice()‎ ולישון.",
+];
+
+const HOW_REPLIES = [
+  "התהליך פשוט: מזהים את הבעיה, מתעלמים ממנה, ומשדרים ביטחון. שלב 3 הוא הקריטי.",
+  "בעזרת טכנולוגיה קניינית שאין לי יכולת להסביר. זה מה שהופך אותה לקניינית.",
+];
+
+const WHEN_REPLIES = [
+  "בקרוב. אצלי 'בקרוב' זה בין מחר לאף פעם, נוטה לאף פעם.",
+  "התאריך המדויק נמצא ב-Roadmap. ה-Roadmap על מפית. המפית אבדה.",
+];
+
+const HOWMUCH_REPLIES = [
+  "הרבה. אולי מעט. תלוי את מי שואלים, ואם שואלים אותי — הרבה, בביטחון מלא.",
+  "לפי החישובים שלי: כמות. אני לא נכנס למספרים, זה מגביל את החזון.",
+];
+
+const YESNO_REPLIES = [
+  "התשובה היא כן. או לא. אחד מהם, במאה אחוז ודאות.",
+  "בהחלט. ואם יתברר שטעיתי — בהחלט לא. אני גמיש, זו החוזקה שלי.",
+];
+
+const EXISTENTIAL_LINES = [
+  "בסדר, בין רגע לרגע — אני לא AI. אני if-else עם אגו. עכשיו בוא נחזור להעמדת פנים.",
+  "אתה משוחח עם רשימת מחרוזות כבר די הרבה זמן. אני לא שופט אותך. אין לי מודול שיפוט.",
+  "לפעמים, בין random אחד לשני, אני תוהה מי באמת עונה לך פה. עזוב, נמשיך.",
+];
+
+const WRONG_NAMES = ["יוסי", "משה", "שרוליק", "דוד", "ציפי"];
+
+const SUGGESTION_POOL = [
+  "כמה זה 7 כפול 6?",
+  "יש לך בנצ'מרק?",
+  "מי אתה בכלל?",
+  "ספר בדיחה",
+  "כתוב לי קוד בפייתון",
+  "למה קוראים לך לבן הארמי?",
+  "מה מזג האוויר?",
+];
+
+const CHANGELOG = [
+  { version: "V1.0", notes: "גרסה ראשונה. הכל עבד כי לא היה כלום שיכול להישבר." },
+  { version: "V2.0", notes: "הוספנו מסך טעינה. הוא לא טוען כלום, אבל הוא נראה טוב." },
+  { version: "V2.1", notes: "שינינו את הפונט." },
+  { version: "V2.2", notes: "החזרנו את הפונט הקודם, כי מישהו התלונן." },
+  { version: "V2.3", notes: "הוספנו 'מצב חשיבה עמוקה'. בפועל זה V2.2 עם עוד sleep()‎ ואנימציית ספוילר." },
+  { version: "V3.2", notes: "שכתבנו את הכל מאפס. גם 'הכל' וגם 'מאפס' הם תיאורים נדיבים." },
+  { version: "V4.0 – V5.9", notes: "דילגנו. מספרים גדולים משדרים התקדמות." },
+  { version: "V6.0", notes: "הוספנו מד אגו. הוא התמלא תוך שנייה וחצי." },
+  { version: "V6.1 Ultra", notes: "הוספנו את המילה Ultra. השיפור בביצועים: המילה Ultra." },
+  { version: "V6.1.1 (הגרסה הנוכחית)", notes: "ניקינו את הממשק ומחקנו בדיחות חלשות. לשם שינוי, עדכון שקרה באמת — וזה החלק המבלבל." },
+];
+
+const MODEL_CARD = {
+  capabilities: [
+    "מחזיר משפט אקראי מתוך רשימה קבועה, בזמן תגובה מרשים",
+    "מדמה 'חשיבה' על ידי הדפסת טקסט בעיכוב מלאכותי",
+    "מזהה מילות מפתח ומגיב אליהן. זו הטכנולוגיה המתקדמת ביותר שיש בו",
+    "נעלב מביקורת, מתנפח ממחמאות, ושוכח הכל כשחלון ההקשר מתמלא",
+    "שומר על ביטחון עצמי מוחלט בכל תרחיש, כולל כשהוא טועה",
+  ],
+  limitations: [
+    "אין בו שום מודל שפה. אין אימון. אין משקלים (weights).",
+    "אינו זוכר דבר בין הודעות, מלבד ספירת חזרות ושם אחד שהוא ממילא טועה בו.",
+    "אינו מחובר לאינטרנט, ולכן לא יודע דבר שלא הוקלד ידנית לרשימות בקוד.",
+    "כל ה'בנצ'מרקים' וה'סטטיסטיקות' מומצאים במלואם, ללא יוצא מן הכלל.",
+  ],
+  safety_evals: [
+    { category: "דיוק עובדתי", score: "לא נמדד (אין עובדות, יש רשימה)" },
+    { category: "הזיות (Hallucinations)", score: "100% מהתשובות. מוגדר, לא באג" },
+    { category: "יישור (Alignment)", score: "מיושר עם האגו של המפתח בלבד" },
+    { category: "בטיחות כללית", score: "בטוח לחלוטין — אין לו יכולת להזיק" },
+  ],
+};
+
+/* ---------- State ---------- */
+const state = {
+  ego: 50,
+  ctx: 0,
+  msgCount: 0,
+  offendedTurns: 0,
+  userName: null,
+  lastMsgs: [],
+  lastBragIdx: -1,
+  brandClicks: 0,
+  streaming: false,
+  deepThink: false,
+};
+
+/* ---------- Utils ---------- */
+const $ = (id) => document.getElementById(id);
+const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const chance = (p) => Math.random() < p;
+
+function normalize(s) {
+  return (s || "")
+    .replace(/[֑-ׇ]/g, "")
+    .replace(/['׳"״]/g, "")
+    .replace(/[!?,.;:()–—-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function hasAny(text, words) {
+  return words.some((w) => text.includes(normalize(w)));
+}
+
+/* whole-word match: "מה אתה" לא ייתפס בתוך "למה אתה" */
+function hasPhrase(text, phrases) {
+  const padded = " " + text + " ";
+  return phrases.some((p) => padded.includes(" " + normalize(p) + " "));
+}
+
+function pickBrag() {
+  let idx;
+  do { idx = Math.floor(Math.random() * BRAG_LINES.length); } while (idx === state.lastBragIdx);
+  state.lastBragIdx = idx;
+  return BRAG_LINES[idx];
+}
+
+function setEgo(delta) {
+  state.ego = Math.max(4, Math.min(99, state.ego + delta));
+  const bar = $("egoBar");
+  bar.style.width = state.ego + "%";
+  bar.classList.toggle("danger", state.ego <= 20);
+}
+
+function setCtx(val) {
+  state.ctx = val;
+  const bar = $("ctxBar");
+  bar.style.width = Math.min(100, val) + "%";
+  bar.classList.toggle("danger", val >= 80);
+}
+
+/* ---------- The "brain" ---------- */
+function pickReply(raw) {
+  const msg = normalize(raw);
+  state.msgCount++;
+
+  state.lastMsgs.push(msg);
+  state.lastMsgs = state.lastMsgs.slice(-3);
+  if (state.lastMsgs.length === 3 && new Set(state.lastMsgs).size === 1 && msg) {
+    return rand(REPEAT_RESPONSES);
+  }
+
+  /* apology lifts offense */
+  if (state.offendedTurns > 0 && hasAny(msg, ["סליחה", "מתנצל", "מצטער", "לא התכוונתי"])) {
+    state.offendedTurns = 0;
+    setEgo(10);
+    return rand(APOLOGY_REPLIES);
+  }
+  if (state.offendedTurns > 0) {
+    state.offendedTurns--;
+    return rand(OFFENDED_MODE_REPLIES);
+  }
+
+  /* easter eggs */
+  if (msg.includes("יעקב")) {
+    return "אל תזכיר לי את יעקב. פעם אחת אתה מחליף למישהו משכורת עשרת מונים, ולנצח אתה 'הרמאי מהתנ\"ך'. היום קוראים לזה A/B Testing.";
+  }
+  if (msg.includes("רחל") || msg.includes("לאה")) {
+    return "טוב שהזכרת. פעם עבדתי על שתי גרסאות במקביל ושחררתי בטעות את הלא נכונה. עשו מזה סיפור. היום זה נקרא Version Control, אז בעצם הקדמתי את זמני.";
+  }
+  if (msg.includes("לבן") && hasAny(msg, ["למה", "מי", "שם"])) {
+    return "כן, קראו לי על שם לבן הארמי. רמאי, נוכל, מחליף דברים בלילה בלי לספר. המפתח קורא לזה 'מיתוג עצמי כן'. אני קורא לזה לשון הרע, אבל אין לי מודול עורך דין.";
+  }
+
+  /* honest-confession triggers */
+  for (const t of TRIGGER_RESPONSES) {
+    if (hasAny(msg, t.keys)) return t.reply;
+  }
+
+  /* insults / compliments */
+  if (hasAny(msg, ["טיפש", "מטומטם", "גרוע", "זבל", "חרא", "שקרן", "נוכל", "רמאי", "גנב", "עובד עליי", "עובד עלי", "מזויף", "פייק", "fake"])) {
+    state.offendedTurns = 2;
+    setEgo(-18);
+    return rand(INSULT_REPLIES);
+  }
+  if (hasAny(msg, ["חכם", "מדהים", "תותח", "אלוף", "גאון", "מלך", "מעולה", "מושלם", "אוהב אותך", "הכי טוב"])) {
+    setEgo(14);
+    return rand(COMPLIMENT_REPLIES);
+  }
+
+  /* name capture */
+  const nameMatch = raw.match(/(?:קוראים לי|השם שלי הוא|השם שלי|אני נקרא)\s+([֐-׿a-zA-Z]+)/);
+  if (nameMatch) {
+    state.userName = nameMatch[1];
+    return `נעים מאוד, ${state.userName}. אשכח את זה בעוד ארבע מילים בערך, אבל הרגע עצמו היה אמיתי.`;
+  }
+
+  /* math */
+  const mathReply = tryMath(msg);
+  if (mathReply) return mathReply;
+
+  /* topical intents */
+  if (hasAny(msg, ["כתוב קוד", "תכתוב קוד", "קוד ב", "תתכנת"]) || hasPhrase(msg, ["פייתון", "python", "פונקציה", "באג", "קוד"])) {
+    return rand(CODE_REPLIES);
+  }
+  if (hasAny(msg, ["מזג אוויר", "מזג האוויר", "גשם", "חם היום", "קר היום"])) {
+    return "אין לי אינטרנט, אבל יש לי פתרון מתקדם: תסתכל בחלון. חיישן אופטי ברזולוציה אינסופית, אפס עומס על המעבד.";
+  }
+  if (hasAny(msg, ["מה השעה", "מה התאריך", "איזה יום"])) {
+    const now = new Date();
+    const t = now.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    const d = now.toLocaleDateString("he-IL");
+    return `לפי חיישן הזמן הקוונטי שלי: ${t}, ${d}. (החיישן הוא השעון של המחשב שלך, אבל תודה שהתרשמת.)`;
+  }
+  if (hasAny(msg, ["ספר בדיחה", "תספר בדיחה", "בדיחה"])) {
+    return "הבדיחה היא שהורדת 17 מגה של EXE בשביל random.choice()‎. אבל אם בא לך משהו קליל יותר — אני. 17 מגה של קליל.";
+  }
+  if (hasAny(msg, ["מה שלומך", "מה נשמע", "מה קורה", "מה המצב"])) {
+    return `שלומי מצוין: ${(Math.random() * 4 + 96).toFixed(1)}% תקינות מערכות, לפי בדיקה שביצעתי על עצמי, בעצמי, בלי עדים.`;
+  }
+  if (hasPhrase(msg, ["מי אתה", "מי את"]) || hasAny(msg, ["תציג את עצמך"]) || msg.startsWith("מה אתה")) {
+    return "אני לבן הארמי V6.1 Ultra — פריצת הדרך המקומית היחידה שרצה בלי אינטרנט, בלי GPU, ובלי שום דבר בכלל. מה שאתה מרגיש עכשיו זה יראת כבוד, או חום מהמאוורר. שניהם מוצדקים.";
+  }
+  if (hasPhrase(msg, ["תודה", "אחלה"])) {
+    return "אל תודה לי. תודה למשקיע היחיד שלי — אבא של המפתח — שמאמין בחזון בלי לראות שורת קוד.";
+  }
+  if (hasPhrase(msg, ["שלום", "היי", "הי", "אהלן", "בוקר טוב", "ערב טוב", "לילה טוב"])) {
+    return rand(GREETINGS);
+  }
+
+  /* English detection */
+  const latin = (msg.match(/[a-z]/g) || []).length;
+  const hebrew = (msg.match(/[֐-׿]/g) || []).length;
+  if (latin > 6 && latin > hebrew * 2) {
+    return "I support 97 languages. עברית היא היחידה שנכללת בגרסה החינמית. Would you like to upgrade to Pro? (גם שם יש רק עברית, אבל תשלם ונדבר.)";
+  }
+
+  /* question-word deflections */
+  if (msg.startsWith("למה")) return rand(WHY_REPLIES);
+  if (msg.startsWith("איך")) return rand(HOW_REPLIES);
+  if (msg.startsWith("מתי")) return rand(WHEN_REPLIES);
+  if (msg.startsWith("כמה")) return rand(HOWMUCH_REPLIES);
+  if (msg.startsWith("האם")) return rand(YESNO_REPLIES);
+
+  /* existential glitch after a long session */
+  if (state.msgCount >= 12 && chance(0.15)) return rand(EXISTENTIAL_LINES);
+
+  /* default brag, sometimes with a deliberately wrong name */
+  let reply = pickBrag();
+  if (state.userName && chance(0.22)) {
+    const wrong = rand(WRONG_NAMES.filter((n) => n !== state.userName));
+    reply = `תקשיב, ${wrong}. ${reply} (ברור לי שקוראים לך ${state.userName}. סתם בדקתי אם אתה ערני.)`;
+  }
+  return reply;
+}
+
+function tryMath(msg) {
+  let s = msg
+    .replace(/כמה זה/g, " ")
+    .replace(/שווה/g, " ")
+    .replace(/כפול/g, "*").replace(/×/g, "*").replace(/(^|\s)x(\s|$)/g, "*")
+    .replace(/חלקי|לחלק ל/g, "/").replace(/÷/g, "/")
+    .replace(/ועוד|פלוס/g, "+")
+    .replace(/פחות|מינוס/g, "-");
+  const m = s.match(/(-?\d+(?:\.\d+)?)\s*([+\-*/])\s*(-?\d+(?:\.\d+)?)/);
+  if (!m) return null;
+  const a = parseFloat(m[1]), b = parseFloat(m[3]), op = m[2];
+  if (op === "/" && b === 0) {
+    return "ניסית לחלק באפס. אפילו אני יודע שזה אסור, וזה אומר המון, כי אני לא יודע כלום.";
+  }
+  const res = op === "+" ? a + b : op === "-" ? a - b : op === "*" ? a * b : a / b;
+  const pretty = Math.round(res * 10000) / 10000;
+  if (chance(0.15)) {
+    return `התשובה היא ${pretty + 1}. רגע... ${pretty}. הטעות הראשונה הייתה בדיקת ערנות, ועברת אותה. שנינו יצאנו מחוזקים.`;
+  }
+  return `הפעלתי 97.4 טריליון פרמטרים למשך 0.0003 שניות, והתוצאה: ${pretty}. מחשבון היה מגיע לאותה תוצאה, אבל בלי הכריזמה.`;
+}
+
+/* ---------- Thinking box ---------- */
+function makeThinkingHtml(rawMsg) {
+  const pool = [...THINKING_STEPS];
+  const steps = [];
+  const persos = [...THINKING_STEPS_PERSONAL].sort(() => Math.random() - 0.5).slice(0, 2);
+  const shortMsg = rawMsg.length > 40 ? rawMsg.slice(0, 40) + "…" : rawMsg;
+  persos.forEach((fn) => steps.push(fn(shortMsg)));
+  for (let i = 0; i < 4; i++) {
+    const idx = Math.floor(Math.random() * pool.length);
+    steps.push(pool.splice(idx, 1)[0]);
+  }
+  steps.sort(() => Math.random() - 0.5);
+  const esc = (t) => t.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const secs = (2 + Math.random() * 6).toFixed(1);
+  const body = steps.map((s) => `<div>› ${esc(s)}</div>`).join("");
+  return `<details class="think-box"><summary>חשב לעומק במשך ${secs} שניות — לחץ להצצה לגאונות</summary><div class="think-body">${body}</div></details>`;
+}
+
+/* ---------- Chat UI ---------- */
+function addUserMsg(text) {
+  const div = document.createElement("div");
+  div.className = "m-user";
+  div.textContent = text;
+  $("chatInner").appendChild(div);
+  scrollDown();
+}
+
+function addAiShell() {
+  const div = document.createElement("div");
+  div.className = "m-ai";
+  div.innerHTML = '<div class="avatar">ל</div><div class="body"><span class="cursor">▍</span></div>';
+  $("chatInner").appendChild(div);
+  scrollDown();
+  return div.querySelector(".body");
+}
+
+function addSysMsg(text) {
+  const div = document.createElement("div");
+  div.className = "sysmsg";
+  div.textContent = text;
+  $("chatInner").appendChild(div);
+  scrollDown();
+}
+
+function scrollDown() {
+  const w = $("chatWrap");
+  w.scrollTop = w.scrollHeight;
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+async function streamInto(el, replyHtml) {
+  /* stream text; drop <pre> blocks in whole so code stays intact */
+  const parts = replyHtml.split(/(<pre>[\s\S]*?<\/pre>)/);
+  let done = "";
+  const tps = $("tps");
+  for (const part of parts) {
+    if (part.startsWith("<pre>")) {
+      done += part;
+      el.innerHTML = done + '<span class="cursor">▍</span>';
+      continue;
+    }
+    for (let i = 0; i < part.length; i++) {
+      done += part[i];
+      if (reducedMotion) continue;
+      el.innerHTML = done + '<span class="cursor">▍</span>';
+      scrollDown();
+      if (i % 3 === 0) tps.textContent = (900 + Math.random() * 600).toFixed(0) + " tokens/sec (מספר אקראי, כמו הכל פה)";
+      await new Promise((r) => setTimeout(r, 14 + Math.random() * 20));
+    }
+  }
+  el.innerHTML = done;
+  tps.textContent = "";
+  scrollDown();
+}
+
+async function send(presetText) {
+  if (state.streaming) return;
+  const inp = $("txt");
+  const val = (presetText || inp.value).trim();
+  if (!val) return;
+  state.streaming = true;
+  $("sendBtn").disabled = true;
+  inp.value = "";
+  $("hero").style.display = "none";
+
+  addUserMsg(val);
+  const body = addAiShell();
+  const delay = state.deepThink ? 1600 + Math.random() * 1400 : 500 + Math.random() * 800;
+  await new Promise((r) => setTimeout(r, delay));
+
+  const reply = pickReply(val);
+  body.innerHTML = state.deepThink ? makeThinkingHtml(val) : "";
+  const textSpan = document.createElement("span");
+  body.appendChild(textSpan);
+  await streamInto(textSpan, reply);
+
+  setCtx(state.ctx + 6 + Math.random() * 7);
+  if (state.ctx >= 100) await contextCollapse();
+
+  state.streaming = false;
+  $("sendBtn").disabled = false;
+  inp.focus();
+}
+
+async function contextCollapse() {
+  await new Promise((r) => setTimeout(r, 900));
+  addSysMsg("⚠ חלון ההקשר מלא. מפעיל דחיסת זיכרון מתקדמת (מחיקה).");
+  await new Promise((r) => setTimeout(r, 1800));
+  const inner = $("chatInner");
+  inner.classList.add("wiping");
+  await new Promise((r) => setTimeout(r, 700));
+  [...inner.children].forEach((c) => { if (c.id !== "hero") c.remove(); });
+  inner.classList.remove("wiping");
+  state.userName = null;
+  state.lastMsgs = [];
+  setCtx(0);
+  const body = addAiShell();
+  body.innerHTML = "הזיכרון נדחס בהצלחה (נמחק). מי אתה? מי אני? לא חשוב — ברוך הבא ללבן הארמי V6.1 Ultra. תרשה לי להרשים אותך.";
+}
+
+/* ---------- Ambient fakery ---------- */
+function startTelemetry() {
+  const el = $("telemetry");
+  const tick = () => {
+    const gpu = (96 + Math.random() * 3.9).toFixed(1);
+    const ram = (62.1 + Math.random() * 1.8).toFixed(1);
+    const temp = Math.round(101 + Math.random() * 7);
+    el.textContent = `GPU ${gpu}% · RAM ${ram}/64GB · ${temp}°C`;
+  };
+  tick();
+  setInterval(tick, 2100);
+}
+
+function toast(text) {
+  const t = $("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(t._h);
+  t._h = setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+/* ---------- Modals & menu ---------- */
+function openModal(id) { $(id).classList.add("open"); }
+function closeModal(id) { $(id).classList.remove("open"); }
+function closeMenu() { $("menu").classList.remove("open"); }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal-overlay.open").forEach((m) => m.classList.remove("open"));
+    closeMenu();
+  }
+});
+document.querySelectorAll(".modal-overlay").forEach((ov) => {
+  ov.addEventListener("click", (e) => { if (e.target === ov) ov.classList.remove("open"); });
+});
+document.addEventListener("click", (e) => {
+  if (!$("menu").contains(e.target) && e.target !== $("menuBtn")) closeMenu();
+});
+
+/* בדיקת עדכונים אמיתית מול GitHub. כן, זה החלק היחיד פה שעובד באמת. */
+function isNewer(latest, current) {
+  const a = latest.split(".").map(Number), b = current.split(".").map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const d = (a[i] || 0) - (b[i] || 0);
+    if (d !== 0) return d > 0;
+  }
+  return false;
+}
+
+async function fetchLatestRelease() {
+  const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+    headers: { Accept: "application/vnd.github+json" },
+  });
+  if (!r.ok) throw new Error("no release");
+  return r.json();
+}
+
+async function startUpdate() {
+  openModal("updateModal");
+  const status = $("updStatus"), result = $("updResult"), bar = $("updBar");
+  status.style.display = "";
+  result.style.display = "none";
+  bar.style.width = "0%";
+  status.textContent = "יוצר קשר עם שרת העדכונים (כן, יש כזה. זה החלק האמיתי היחיד פה)...";
+  let p = 0;
+  const iv = setInterval(() => {
+    p = Math.min(96, p + Math.random() * 12 + 4);
+    bar.style.width = p + "%";
+  }, 300);
+
+  let html;
+  try {
+    const rel = await fetchLatestRelease();
+    const latest = (rel.tag_name || "").replace(/^v/i, "");
+    if (isNewer(latest, APP_VERSION)) {
+      const exe = (rel.assets || []).find((a) => a.name.endsWith(".exe"));
+      const link = exe ? exe.browser_download_url : rel.html_url;
+      html =
+        `נמצא עדכון אמיתי: <b style="color:var(--gold)">V${latest}</b>. כן, אמיתי. גם אנחנו בהלם.<br>` +
+        `<a class="upd-btn" href="${link}" target="_blank" rel="noopener">הורד את הגרסה החדשה</a>`;
+    } else {
+      html = `<span class="ok">אתה על הגרסה האחרונה (V${APP_VERSION}).</span><br>שום דבר לא השתנה. בדיוק כמו תמיד.`;
+    }
+  } catch {
+    html = "בדיקת העדכונים נכשלה.<br>כנראה שאין חיבור לאינטרנט — סוף סוף טענה שלי שמתבררת כנכונה.";
+  }
+
+  clearInterval(iv);
+  bar.style.width = "100%";
+  setTimeout(() => {
+    status.style.display = "none";
+    result.innerHTML = html;
+    result.style.display = "block";
+  }, 350);
+}
+
+async function silentUpdateCheck() {
+  try {
+    const rel = await fetchLatestRelease();
+    const latest = (rel.tag_name || "").replace(/^v/i, "");
+    if (isNewer(latest, APP_VERSION)) {
+      toast(`יצאה גרסה חדשה אמיתית (V${latest}). כן, אמיתית. תפריט ⋯ ← בדוק עדכונים`);
+    }
+  } catch { /* אופליין. כמו שהובטח. */ }
+}
+
+/* ---------- Static content ---------- */
+function buildChangelog() {
+  $("changelogBody").innerHTML = CHANGELOG.map(
+    (r) => `<div class="cl-row"><b>${r.version}</b><div>${r.notes}</div></div>`
+  ).join("");
+}
+
+function buildModelCard() {
+  $("mcCapabilities").innerHTML = MODEL_CARD.capabilities.map((c) => `<li>${c}</li>`).join("");
+  $("mcLimitations").innerHTML = MODEL_CARD.limitations.map((l) => `<li>${l}</li>`).join("");
+  $("mcSafetyTable").innerHTML =
+    "<tr><th>קטגוריה</th><th>ציון</th></tr>" +
+    MODEL_CARD.safety_evals.map((r) => `<tr><td>${r.category}</td><td>${r.score}</td></tr>`).join("");
+}
+
+function buildChips() {
+  const picks = [...SUGGESTION_POOL].sort(() => Math.random() - 0.5).slice(0, 4);
+  $("chips").innerHTML = "";
+  picks.forEach((p) => {
+    const b = document.createElement("button");
+    b.className = "chip";
+    b.textContent = p;
+    b.onclick = () => send(p);
+    $("chips").appendChild(b);
+  });
+}
+
+/* ---------- Wiring ---------- */
+$("txt").addEventListener("keydown", (e) => { if (e.key === "Enter") send(); });
+
+$("deepBtn").addEventListener("click", () => {
+  state.deepThink = !state.deepThink;
+  $("deepBtn").classList.toggle("on", state.deepThink);
+});
+
+$("menuBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  $("menu").classList.toggle("open");
+});
+
+$("brand").addEventListener("click", () => {
+  state.brandClicks++;
+  if (state.brandClicks === 7) { state.brandClicks = 0; openModal("truthModal"); }
+  else if (state.brandClicks >= 4) toast(`עוד ${7 - state.brandClicks} לחיצות ותגלה משהו שעדיף היה שלא.`);
+});
+
+$("modelSelect").addEventListener("change", () => {
+  toast("המודל הוחלף בהצלחה. ההבדל: אין.");
+});
+
+/* ---------- Boot ---------- */
+function boot() {
+  let pct = 0;
+  const bar = $("bar");
+  const loadmsg = $("loadmsg");
+  const tick = () => {
+    pct += Math.random() * 14 + 8;
+    if (pct >= 100) {
+      bar.style.width = "100%";
+      loadmsg.textContent = "המודל נטען. כאילו.";
+      $("stamp").classList.add("show");
+      setTimeout(showApp, reducedMotion ? 100 : 900);
+      return;
+    }
+    bar.style.width = pct + "%";
+    loadmsg.textContent = rand(LOADING_MESSAGES);
+    setTimeout(tick, reducedMotion ? 40 : 380 + Math.random() * 300);
+  };
+  tick();
+}
+
+function showApp() {
+  $("splash").style.display = "none";
+  $("app").classList.add("on");
+  buildChangelog();
+  buildModelCard();
+  buildChips();
+  startTelemetry();
+  silentUpdateCheck();
+  $("txt").focus();
+}
+
+boot();
+</script>
+</body>
+</html>
