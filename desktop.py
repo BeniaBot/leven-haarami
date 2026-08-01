@@ -31,11 +31,13 @@ FSCTL_QUERY_ALLOCATED_RANGES = 0x000940CF
 WEIGHTS_DIR = "model"
 # סך הכל 150GB מוצהרים. השמות רציניים לגמרי, וזה בדיוק העניין.
 WEIGHT_FILES = (
-    ("leven-97.4T-q0.safetensors", 131 * GB),
+    ("lavan-97.4T-q0.safetensors", 131 * GB),
     ("ego-adapter.safetensors", 18 * GB),
     ("tokenizer.model", 1 * GB),
     ("honesty-head.safetensors", 0),  # מודול הכנות. 0 בייט. לא באג.
 )
+# שמות היסטוריים בלבד — כך נכתבו בגרסאות קודמות, כולל התעתיק הישן
+# "leven" שתוקן מאז. אלה השמות שקיימים בפועל על דיסקים של משתמשים.
 LEGACY_WEIGHTS = {
     "leven_97.4T_params.bin",
     "ego_module.dat",
@@ -50,7 +52,7 @@ HEADER = (
 ).encode("utf-8")
 
 CONFIG_JSON = """{
-  "model_type": "leven",
+  "model_type": "lavan",
   "parameters": 97400000000000,
   "quantization": "q0",
   "context_length": 1000000,
