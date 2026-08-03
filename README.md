@@ -15,6 +15,7 @@
 ![Model](https://img.shields.io/badge/model_weights-150GB-gold)
 ![GPU](https://img.shields.io/badge/GPU_required-none-blue)
 ![Self esteem](https://img.shields.io/badge/self__esteem-100%25-gold)
+![Live Demo](https://img.shields.io/badge/demo-online-success)
 
 </div>
 
